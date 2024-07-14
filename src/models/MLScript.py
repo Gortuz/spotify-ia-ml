@@ -11,7 +11,7 @@ def predict_Popularity(form_data):
 
     model = get_algorithm_model(int(form_data['algorithm']))
 
-    song_data = [6,6,230666,0,0.676,0.461,1,-6.746,0,0.143,0.0322,1.01e-06,0.358,0.715,87.917,4,1,5,1,0,5,1,0]
+    song_data = [8,8,248448,0,0.691,0.234,3,-6.441,1,0.0285,0.777,0.0,0.12,0.209,87.103,4,1,5,2,1,5,2,1]
     popularity = model.predict(np.array([song_data]))
 
     
