@@ -1,20 +1,78 @@
+import numpy as np
+import tensorflow as tf
+import joblib
+from tensorflow.keras.models import load_model
 
-def Predict_Popularity(form_data):
-    print("Received form data:")
-    for key, value in form_data.items():
-        print(f"{key}: {value}")
+def predict_Popularity(form_data):
+
+    song_data = get_song_data(form_data)
     
-    popularity = 0.5
+    print(song_data)
 
+    model = get_algorithm_model(int(form_data['algorithm']))
 
+    song_data = [6,6,230666,0,0.676,0.461,1,-6.746,0,0.143,0.0322,1.01e-06,0.358,0.715,87.917,4,1,5,1,0,5,1,0]
+    popularity = model.predict(np.array([song_data]))
+
+    
     print("******************\nPredicted popularity:", popularity)
-    return {'popularity': popularity}
+    if int(form_data['algorithm']) == 1:
+        return {'popularity': popularity.tolist()[0][0]}
+    else:
+        return {'popularity': popularity.tolist()[0]}
 
-def count_uppercase_letters(s):
-    return sum(1 for c in s if c.isupper())
+def get_song_data(form_data):
+    album_name_lowercase_count, album_name_uppercase_count, album_name_space_count = count_strings_charactersc(form_data['album_name'])
+    track_name_lowercase_count, track_name_uppercase_count, track_name_space_count = count_strings_charactersc(form_data['track_name'])
 
-def count_lowercase_letters(s):
-    return sum(1 for c in s if c.islower())
+    song_data = [
+    #    '6,6,230666,0,0.676,0.461,1,-6.746,0,0.143,0.0322,1.01e-06,0.358,0.715,87.917,4,1,5,1,0,5,1,0'
+        len(form_data['album_name']),
+        len(form_data['track_name']),
+        int(form_data['duration_ms']),
+        int(form_data['explicit']),
+        float(form_data['danceability']),
+        float(form_data['energy']),
+        int(form_data['key']),
+        float(form_data['loudness']),
+        int(form_data['mode']),
+        float(form_data['speechiness']),
+        float(form_data['acousticness']),
+        float(form_data['instrumentalness']),
+        float(form_data['liveness']),
+        float(form_data['valence']),
+        float(form_data['tempo']),
+        int(form_data['time_signature']),
+        int(form_data['track_genre']),
+        album_name_lowercase_count,
+        album_name_uppercase_count,
+        album_name_space_count,
+        track_name_lowercase_count,
+        track_name_uppercase_count,
+        track_name_space_count
+    ]
+    array_song_data = np.array(song_data) 
 
-def count_spaces(s):
-    return sum(1 for c in s if c.isspace())
+    return array_song_data
+
+def get_algorithm_model(number):
+    path = ''
+    if number == 0: #lineal
+        path = 'src/models/algorithms/lineal_regression.joblib'
+    elif number == 1:
+        path = 'src/models/algorithms/neural_network.h5'
+        return load_model(path)
+    elif number == 2:
+        path = 'src/models/algorithms/lineal_regression.joblib'
+    elif number == 3:
+        path = 'src/models/algorithms/logistic_regresion.joblib'
+    
+    return joblib.load(path)
+
+def count_strings_charactersc(texto):
+    lowercase_count = sum(1 for c in texto if c.islower())
+    uppercase_count = sum(1 for c in texto if c.isupper())
+    space_count = sum(1 for c in texto if c.isspace())
+
+    # print(lowercase_count, uppercase_count, space_count)
+    return lowercase_count, uppercase_count, space_count
