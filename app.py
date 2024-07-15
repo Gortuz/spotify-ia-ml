@@ -1,7 +1,5 @@
 from flask import Flask, jsonify, request, render_template
-from config import config
 from src.models.MLScript import predict_Popularity
-configuration = config['development']
 
 app = Flask(__name__)
 
@@ -21,4 +19,4 @@ def test():
     return jsonify({})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
