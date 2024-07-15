@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 import tensorflow as tf
 import joblib
 from tensorflow.keras.models import load_model
@@ -11,7 +12,6 @@ def predict_Popularity(form_data):
 
     model = get_algorithm_model(int(form_data['algorithm']))
 
-    song_data = [8,8,248448,0,0.691,0.234,3,-6.441,1,0.0285,0.777,0.0,0.12,0.209,87.103,4,1,5,2,1,5,2,1]
     popularity = model.predict(np.array([song_data]))
 
     
@@ -66,7 +66,11 @@ def get_algorithm_model(number):
         path = 'src/models/algorithms/lineal_regression.joblib'
     elif number == 3:
         path = 'src/models/algorithms/logistic_regresion.joblib'
-    
+    elif number == 4:
+        path = 'src/models/algorithms/gradient_boosting.pkl'
+        with open(path, 'rb') as file:
+            return pickle.load(file)
+
     return joblib.load(path)
 
 def count_strings_charactersc(texto):
