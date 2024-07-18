@@ -57,12 +57,12 @@ def get_song_data(form_data):
 def get_algorithm_model(number):
     path = ''
     if number == 0: #lineal
-        path = 'src/models/algorithms/gradient_boosting.joblib'
+        path = '/var/www/spotify-ia-ml/src/algorithms/gradient_boosting.joblib'
     elif number == 1:
-        path = 'src/models/algorithms/neural_network.h5'
+        path = '/var/www/spotify-ia-ml/src/algorithms/neural_network.h5'
         return load_model(path)
     elif number == 2:
-        path = 'src/models/algorithms/linear_regression_fl.joblib'
+        path = '/var/www/spotify-ia-ml/src/algorithms/linear_regression_fl.joblib'
 
     return joblib.load(path)
 
