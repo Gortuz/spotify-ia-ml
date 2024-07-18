@@ -12,7 +12,7 @@ def getHome():
 
 @app.route('/spotify-ia', methods=['POST'])
 def testSongData():
-    form_data = request.form
+    form_data = request.get_json()
     popularity = predict_Popularity(form_data)
     return jsonify(popularity)
 
