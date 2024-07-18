@@ -6,15 +6,16 @@ from tensorflow.keras.models import load_model
 def predict_Popularity(form_data):
 
     song_data = get_song_data(form_data)
+
+    model, scaler = get_algorithm_model(int(form_data['algorithm']))
+
+    song_data = np.array(song_data).reshape(1, -1)
+    song_data = scaler.transform(song_data)
     
-    print(song_data)
+    popularity = model.predict(song_data)
 
-    model = get_algorithm_model(int(form_data['algorithm']))
-
-    popularity = model.predict(np.array([song_data]))
-
-    
     print("******************\nPredicted popularity:", popularity)
+
     if int(form_data['algorithm']) == 1:
         return {'popularity': popularity.tolist()[0][0]}
     else:
@@ -28,21 +29,21 @@ def get_song_data(form_data):
     #    '6,6,230666,0,0.676,0.461,1,-6.746,0,0.143,0.0322,1.01e-06,0.358,0.715,87.917,4,1,5,1,0,5,1,0'
         len(form_data['album_name']),
         len(form_data['track_name']),
-        int(form_data['duration_ms']),
-        int(form_data['explicit']),
-        float(form_data['danceability']),
-        float(form_data['energy']),
-        int(form_data['key']),
-        float(form_data['loudness']),
-        int(form_data['mode']),
-        float(form_data['speechiness']),
-        float(form_data['acousticness']),
-        float(form_data['instrumentalness']),
-        float(form_data['liveness']),
-        float(form_data['valence']),
-        float(form_data['tempo']),
-        int(form_data['time_signature']),
-        int(form_data['track_genre']),
+        form_data['duration_ms'],
+        form_data['explicit'],
+        form_data['danceability'],
+        form_data['energy'],
+        form_data['key'],
+        form_data['loudness'],
+        form_data['mode'],
+        form_data['speechiness'],
+        form_data['acousticness'],
+        form_data['instrumentalness'],
+        form_data['liveness'],
+        form_data['valence'],
+        form_data['tempo'],
+        form_data['time_signature'],
+        form_data['track_genre'],
         album_name_lowercase_count,
         album_name_uppercase_count,
         album_name_space_count,
@@ -50,26 +51,30 @@ def get_song_data(form_data):
         track_name_uppercase_count,
         track_name_space_count
     ]
-    array_song_data = np.array(song_data) 
-
-    return array_song_data
+    return song_data
 
 def get_algorithm_model(number):
-    path = ''
+    path = '/var/www/spotify-ia-ml/src/algorithms/'
+    scaler = 'scaler.joblib'
     if number == 0: #lineal
-        path = '/var/www/spotify-ia-ml/src/algorithms/gradient_boosting.joblib'
-    elif number == 1:
-        path = '/var/www/spotify-ia-ml/src/algorithms/neural_network.h5'
-        return load_model(path)
-    elif number == 2:
-        path = '/var/www/spotify-ia-ml/src/algorithms/linear_regression_fl.joblib'
+        path += 'gradient_boosting/'
+        file = 'gradient_boosting.joblib'
 
-    return joblib.load(path)
+    elif number == 1:
+        path += 'neural_network/'
+        file = 'neural_network.h5'
+        return load_model(path+file), joblib.load(path+scaler)
+    
+    elif number == 2:
+        path += 'linear_regression_fl/'
+        file = 'linear_regression_fl.joblib'
+
+    return joblib.load(path+file), joblib.load(path+scaler)
 
 def count_strings_charactersc(texto):
     lowercase_count = sum(1 for c in texto if c.islower())
     uppercase_count = sum(1 for c in texto if c.isupper())
     space_count = sum(1 for c in texto if c.isspace())
 
-    # print(lowercase_count, uppercase_count, space_count)
+    print(lowercase_count, uppercase_count, space_count)
     return lowercase_count, uppercase_count, space_count
