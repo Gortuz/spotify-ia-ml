@@ -1,5 +1,4 @@
 import numpy as np
-import pickle
 import tensorflow as tf
 import joblib
 from tensorflow.keras.models import load_model
